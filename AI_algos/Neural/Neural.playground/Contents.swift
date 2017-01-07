@@ -16,16 +16,25 @@ let dataset: [[Double]] = [[2.7810836,2.550537003,0],
 struct Neuron {
     var weights: [Double]
     
-    init(_ inputs: Int) {
-        weights = (0..<inputs).map{ _ in drand48() }
+    init(_ numInputs: Int) {
+        weights = (0..<numInputs).map{ _ in drand48() }
+    }
+    
+    func activate(inputs: [Double]) -> Double {
+        // last weight is bias term
+        let activation = zip(inputs, weights).reduce(weights.last!, { result, weightTup in
+            return result + weightTup.0 * weightTup.1
+        })
+        
+        return activation
     }
 }
 
 struct Layer {
     var neurons: [Neuron]
     
-    init(inputs: Int, numberOfNeurons: Int) {
-        neurons = (0..<numberOfNeurons).map{ _ in Neuron(inputs) }
+    init(numInputs: Int, numberOfNeurons: Int) {
+        neurons = (0..<numberOfNeurons).map{ _ in Neuron(numInputs) }
     }
 }
 
@@ -34,11 +43,24 @@ struct NeuralNetwork {
     let hiddenLayer: Layer
     
     init(inputs: Int, numOfHiddenNeurons: Int, numOfOutputNeurons: Int) {
-        hiddenLayer = Layer(inputs: inputs, numberOfNeurons: numOfHiddenNeurons)
-        outputLayer = Layer(inputs: inputs, numberOfNeurons: numOfOutputNeurons)
+        hiddenLayer = Layer(numInputs: inputs, numberOfNeurons: numOfHiddenNeurons)
+        outputLayer = Layer(numInputs: inputs, numberOfNeurons: numOfOutputNeurons)
     }
 }
 
 // test
 let nn = NeuralNetwork(inputs: 5, numOfHiddenNeurons: 1, numOfOutputNeurons: 2)
 print(nn)
+
+let arr1 = [2, 4, 5, 7]
+let arr2 = ["hello", "wat", "ok", "cool", "yeah"]
+let aa = zip(arr1, arr2)
+
+
+let rr = aa.reduce("", { obj, oo in
+    var obj1 = obj
+    obj1 += oo.1
+    return obj1
+})
+
+print(rr)
